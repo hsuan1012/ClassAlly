@@ -25,7 +25,7 @@ export function AppLayout({ children }: AppLayoutProps) {
     // 檢查身份驗證狀態
     const checkAuth = async () => {
       try {
-        const { createClient } = await import('@/app/lib/supabase');
+        const { createClient } = await import('@/lib/supabase');
         const supabase = createClient();
         
         // 檢查會話
