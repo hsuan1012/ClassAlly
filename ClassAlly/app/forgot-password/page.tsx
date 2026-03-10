@@ -95,7 +95,6 @@ export default function ForgotPasswordPage() {
 
           </div>
         </div>
-        <p className="mt-2 text-muted-foreground">AI-powered student tracking and tutoring system</p>
       </div>
       
       <Card className="w-full max-w-md">

@@ -10,7 +10,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "ClassAlly",
-  description: "AI-powered student tracking and tutoring system",
+  description: "AI 學習追蹤與輔導系統",
 };
 
 export default function RootLayout({
