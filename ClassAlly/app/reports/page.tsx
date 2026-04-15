@@ -68,6 +68,8 @@ export default function ReportsPage() {
   const [aiAdvice, setAiAdvice] = useState<string>("");
   const [isAdviceLoading, setIsAdviceLoading] = useState(false);
 
+  const [isExportingChats, setIsExportingChats] = useState(false);
+
   useEffect(() => {
     const initPage = async () => {
       try {
@@ -253,6 +255,89 @@ export default function ReportsPage() {
     XLSX.writeFile(wb, `${selectedStudent}_Report.xlsx`);
   };
 
+  const exportAllChatsToExcel = async () => {
+    setIsExportingChats(true);
+    try {
+      const { supabase } = await import('../../lib/supabase');
+      const client = typeof supabase === 'function' ? supabase() : supabase;
+
+      // 撈取資料，並確保按照時間先後排序 (才不會先看到後面單元的發問)
+      const { data, error } = await client
+        .from('learning_analytics')
+        .select('student_id, ai_chat_history, created_at')
+        .not('ai_chat_history', 'is', null)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      // 準備一個 Map 來將「同一個學號」的資料統整在一起
+      const studentDataMap = new Map<string, { rowData: any; qCount: number; currentQ: string }>();
+
+      data.forEach((record: any) => {
+        const studentId = record.student_id;
+        const history = record.ai_chat_history || [];
+
+        // 如果這個學號是第一次出現，幫他建立專屬的「那一列」與計數器
+        if (!studentDataMap.has(studentId)) {
+          studentDataMap.set(studentId, {
+            rowData: { "學號": studentId },
+            qCount: 1,      // 題號從 1 開始
+            currentQ: ""    // 暫存學生的問題
+          });
+        }
+
+        // 取得這個學號目前的狀態包
+        const studentState = studentDataMap.get(studentId)!;
+
+        // 開始將這堂課的對話塞進這個學號的列裡面
+        history.forEach((msg: ChatMessage) => {
+          if (msg.isUser) {
+            // 學生發問，暫存問題
+            studentState.currentQ = msg.content;
+          } else {
+            // AI 回答時，檢查前面有沒有學生的問題 (略過 AI 單方面的開場白)
+            if (studentState.currentQ !== "") {
+              // 配對成功！寫入動態欄位，題號會跨單元繼續累加
+              studentState.rowData[`學生問${studentState.qCount}`] = studentState.currentQ;
+              studentState.rowData[`AI回答${studentState.qCount}`] = msg.content;
+              
+              studentState.qCount++; // 題號加 1
+              studentState.currentQ = ""; // 清空問題，等待下次發問
+            }
+          }
+        });
+      });
+
+      // 將 Map 轉換回 Excel 可以吃的 Array，並過濾掉沒有實質發問的人
+      const chatRows: any[] = [];
+      studentDataMap.forEach((state) => {
+        if (state.qCount > 1) { // 代表他至少有完成一組「問與答」
+          chatRows.push(state.rowData);
+        }
+      });
+
+      if (chatRows.length === 0) {
+        alert("目前沒有任何實質對話紀錄可以匯出！");
+        return;
+      }
+
+      // 產生 Excel
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(chatRows);
+
+      XLSX.utils.book_append_sheet(wb, ws, "全班與AI對話紀錄");
+      
+      const dateString = new Date().toISOString().split('T')[0];
+      XLSX.writeFile(wb, `全班與AI對話紀錄_${dateString}.xlsx`);
+
+    } catch (err) {
+      console.error("匯出失敗:", err);
+      alert("匯出失敗，請檢查開發者工具(F12)的 Console 錯誤訊息");
+    } finally {
+      setIsExportingChats(false);
+    }
+  };
+
   if (loading && analytics.length === 0) {
     return <div className="flex h-screen items-center justify-center neo-bg-pattern"><Loader2 className="animate-spin h-12 w-12 text-black" /></div>;
   }
@@ -279,8 +364,28 @@ export default function ReportsPage() {
               {students.filter(s => s.name.toLowerCase().includes(searchTerm.toLowerCase())).map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
             </select>
           </div>
+          
+          <div className="flex flex-wrap items-center gap-4 w-full md:w-auto">
+          {/* 原本的搜尋與選單...略... */}
+          
+
+          {/* 👇 3. 新增：匯出全班對話按鈕 (改用黃色背景作區別) */}
+          <Button 
+            onClick={exportAllChatsToExcel} 
+            disabled={isExportingChats}
+            className="neo-excel-btn bg-yellow-300 hover:bg-yellow-400"
+          >
+            {isExportingChats ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <MessageSquare className="w-4 h-4" />
+            )}
+            匯出全班與AI對話內容
+          </Button>
+        </div>
+
           <Button onClick={exportToExcel} className="neo-excel-btn">
-             <FileSpreadsheet className="w-4 h-4" /> 匯出至 EXCEL
+             <FileSpreadsheet className="w-4 h-4" /> 匯出個人完成時間
           </Button>
         </div>
       </div>
