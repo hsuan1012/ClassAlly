@@ -29,21 +29,17 @@
 
 ```text
 ClassAlly/
-├── app/                # Next.js App Router 路由 (包含管理端頁面與學習路徑)
-│   ├── admin/
-│   │   ├── dashboard/  # 核心數據概覽看板
-│   │   ├── students/   # 學生名單與個人歷程分析
-│   │   ├── courses/    # 課程內容編輯器
-│   │   └── ai-logs/    # AI 互動紀錄查詢
-├── components/         # 專案核心 UI 組件
-│   ├── charts/         # 數據視覺化圖表 (使用 Recharts)
-│   ├── editor/         # 課程編輯器相關元件
-│   └── tables/         # 高階數據過濾與顯示表格
-├── contexts/           # React 全域狀態管理 (管理權限與學習狀態)
+├── src/app/            # Next.js App Router 路由 
+├── app/                
+├── components/         # 專案核心 UI 組件 
+├── contexts/           # React 全域狀態管理 
+├── docs/               # 專案相關開發文件、研究論文與說明文件
 ├── hooks/              # 自定義 React Hooks 
 ├── lib/                # 核心服務整合 (Gemini API 串接、Supabase 管理端 API)
-├── types/              # 數據 Schema 與權限型別定義
-└── utils/              # 數據演算與格式化工具函式
+├── types/              # 數據 Schema 與 TypeScript 型別定義
+├── utils/              # 數據演算與格式化工具函式
+├── public/             # 靜態資源檔案 
+└── scripts/            # 自動化腳本或數據處理工具
 ```
 
 ## 💻 本地端運行指南
