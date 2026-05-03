@@ -17,10 +17,11 @@
 
 ## 技術
 
-- **框架：** Next.js (App Router), React
-- **資料庫：** Supabase (PostgreSQL / Real-time Database)
+- **執行環境：** Node.js
+- **資料庫：** Supabase 
 - **分析工具：** Recharts
 - **AI 串接：** Google Gemini API
+- **部署平台：** Vercel
 
 ## 檔案結構 
 
