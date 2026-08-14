@@ -21,12 +21,10 @@
 | 登入頁面 | 課程管理 |
 | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/597b70e4-7c7d-4acc-b3d9-2200903182aa" width="400" alt="登入頁面" /> | <img src="https://github.com/user-attachments/assets/085d776e-421d-4416-9a8f-05d90931c439" width="400" alt="課程管理" /> |
-| 整合遊戲化獎勵機制 | Excel 操作介面轉化為可互動的點選區塊 |
 
 | 群體分析 | 個體分析 |
 | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/668b7f6b-8327-4bff-9186-d15973244974" width="400" alt="群體分析" /> | <img src="https://github.com/user-attachments/assets/f4fd47e7-51df-409d-9e2c-eb7a8ad344c6" width="400" alt="個體分析" /> |
-| 整合遊戲化獎勵機制 | Excel 操作介面轉化為可互動的點選區塊 |
 
 ## 技術
 
